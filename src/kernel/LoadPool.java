@@ -1,0 +1,74 @@
+package kernel;
+
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: alex
+ * Date: 07.11.11
+ * Time: 19:26
+ */
+public class LoadPool
+{
+    private Queue<Chunk> chunks = new LinkedList<Chunk>();
+    protected ExecutorService workers;
+
+    @Nullable
+    protected LoadListener listener;
+
+    public LoadPool(int threads)
+    {
+        workers = Executors.newFixedThreadPool(threads);
+    }
+
+    public synchronized void enqueue(Chunk chunk)
+    {
+        chunks.add(chunk);
+        workers.execute(new LoadTask());
+    }
+
+    protected synchronized Chunk pop()
+    {
+        return chunks.poll();
+    }
+
+    public void addChangeListener(LoadListener listener)
+    {
+        this.listener = listener;
+    }
+
+    private synchronized void dispatchLoaded(Chunk chunk)
+    {
+        if(listener != null)
+            listener.onChunkLoaded(chunk);
+    }
+
+    private class LoadTask implements Runnable
+    {
+        public void run()
+        {
+            Chunk chunk = pop();
+            if (chunk != null)
+                try
+                {
+                    chunk.load();
+                    dispatchLoaded(chunk);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+        }
+    }
+
+    public static interface LoadListener
+    {
+        void onChunkLoaded(Chunk chunk);
+    }
+}

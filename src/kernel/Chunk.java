@@ -7,11 +7,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
-* Created by IntelliJ IDEA.
-* User: alex
-* Date: 31.10.11
-* Time: 6:17
-*/
+ * Created by IntelliJ IDEA.
+ * User: alex
+ * Date: 31.10.11
+ * Time: 6:17
+ */
 public class Chunk
 {
     private static final int BUFFER_SIZE = 8 * 1024;
@@ -19,21 +19,61 @@ public class Chunk
     public int zenithAngle, azimuthAngle;
     public float size;
 
-    public Chunk(){}
+    private boolean bigEndian;
+    private int edge;
+    private short data[][];
 
-    public Chunk(String path, String filename)
+    public Chunk()
+    {
+    }
+
+    public Chunk(String path, String filename, boolean bigEndian, int edge)
     {
         this.path = path;
         this.filename = filename;
         this.size = 1;
+        this.bigEndian = bigEndian;
+        this.edge = edge;
 
-        zenithAngle = Integer.parseInt(filename.substring(1,3), 10);
-        if(filename.charAt(0) == 'S')
+        zenithAngle = Integer.parseInt(filename.substring(1, 3), 10);
+        if (filename.charAt(0) == 'N')
             zenithAngle *= -1;
 
-        azimuthAngle = Integer.parseInt(filename.substring(4,7), 10);
-        if(filename.charAt(3) == 'W')
+        azimuthAngle = Integer.parseInt(filename.substring(4, 7), 10);
+        if (filename.charAt(3) == 'W')
             azimuthAngle *= -1;
+    }
+
+    public boolean isLoaded()
+    {
+        return data != null;
+    }
+
+    public void unload()
+    {
+        data = null;
+    }
+
+    public void load() throws IOException
+    {
+        String name = path + File.separator + filename;
+
+        // open file
+        FileInputStream fis = new FileInputStream(name);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        DataInputStream dis = new DataInputStream(bis);
+
+        data = new short[edge][edge];
+        try
+        {
+            for (int x = 0; x < edge; x++)
+                for (int y = 0; y < edge; y++)
+                    data[y][x] = dis.readShort();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("Error during loading chunk " + name);
+        }
     }
 
     public void save() throws IOException
@@ -54,7 +94,7 @@ public class Chunk
         ZipEntry entry = new ZipEntry(filename);
         zis.putNextEntry(entry);
         int count;
-        while((count = bis.read(bytes)) > 0)
+        while ((count = bis.read(bytes)) > 0)
             zis.write(bytes, 0, count);
 
         // close zip archive
@@ -73,10 +113,10 @@ public class Chunk
     private byte[] convert(byte bytes[], int count)
     {
         int length = Math.min(count, bytes.length);
-        for(int i=0; i < length; i+=2)
+        for (int i = 0; i < length; i += 2)
         {
-            byte b = bytes[i+1];
-            bytes[i+1] = bytes[i];
+            byte b = bytes[i + 1];
+            bytes[i + 1] = bytes[i];
             bytes[i] = b;
         }
         return bytes;

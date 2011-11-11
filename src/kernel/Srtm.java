@@ -3,6 +3,7 @@ package kernel;
 import com.sun.istack.internal.NotNull;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +15,13 @@ import java.util.List;
  */
 public class Srtm
 {
+    private static final FilenameFilter HGT_FILTER = new FilenameFilter()
+    {
+        public boolean accept(File dir, String name)
+        {
+            return name.endsWith(".hgt");
+        }
+    };
     private String path;
     private List<Chunk> chunks;
     private LOD topLod;
@@ -29,14 +37,19 @@ public class Srtm
     {
         chunks = new LinkedList<Chunk>();
         File folder = new File(path);
-        for (String filename : folder.list())
-            chunks.add(new Chunk(path, filename));
+        for (String filename : folder.list(HGT_FILTER))
+            chunks.add(new Chunk(path, filename, true, 1201));
     }
 
     @NotNull
     public List<Chunk> enumerate()
     {
         return chunks;
+    }
+
+    public LOD getTopLod()
+    {
+        return topLod;
     }
 
     public class LOD
@@ -54,7 +67,11 @@ public class Srtm
                 chunks[x] = new Chunk[height];
 
             for (Chunk chunk : chunkList)
-                chunks[chunk.azimuthAngle + 180][chunk.zenithAngle + 90] = chunk;
+            {
+                int x = chunk.azimuthAngle + 180;
+                int y = chunk.zenithAngle + 90;
+                chunks[x][y] = chunk;
+            }
         }
 
         public int getWidth()
