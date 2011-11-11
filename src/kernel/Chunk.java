@@ -44,7 +44,7 @@ public class Chunk
             azimuthAngle *= -1;
     }
 
-    public boolean isLoaded()
+    public synchronized boolean isLoaded()
     {
         return data != null;
     }

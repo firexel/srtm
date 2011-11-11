@@ -59,4 +59,9 @@ public class LodCanvas extends JPanel
             }
         }
     }
+
+    public void setLod(LOD lod)
+    {
+        this.lod = lod;
+    }
 }

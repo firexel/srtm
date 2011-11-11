@@ -25,24 +25,7 @@ public class LOD
     private int width, height;
     private int chunkEdge;
 
-    private LOD(int chunkSize, List<Chunk> chunkList)
-    {
-        width = 360 / chunkSize;
-        height = 180 / chunkSize;
-
-        chunks = new Chunk[width][height];
-        for (int x = 0; x < width; x++)
-            chunks[x] = new Chunk[height];
-
-        for (Chunk chunk : chunkList)
-        {
-            int x = chunk.azimuthAngle + 180;
-            int y = chunk.zenithAngle + 90;
-            chunks[x][y] = chunk;
-        }
-    }
-
-    public LOD(int width, int height, int edge, Chunk chunks[][])
+    private LOD(int width, int height, int edge, Chunk chunks[][])
     {
         this.width = width;
         this.height = height;
@@ -83,7 +66,7 @@ public class LOD
         File folder = new File(path);
         for (String filename : folder.list(HGT_FILTER))
         {
-            Chunk chunk = new Chunk(path, filename, true, 1201);
+            Chunk chunk = new Chunk(path, filename, true, edge);
             chunks[chunk.azimuthAngle + width/2][chunk.zenithAngle + height/2] = chunk;
         }
 

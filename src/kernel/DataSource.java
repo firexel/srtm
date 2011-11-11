@@ -9,4 +9,7 @@ package kernel;
 public interface DataSource
 {
     short get(int x, int y);
+    int getWidth();
+    int getHeight();
+    boolean isAvailable(int x, int y);
 }

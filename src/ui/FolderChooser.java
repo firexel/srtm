@@ -36,7 +36,7 @@ public class FolderChooser extends JPanel implements ActionListener
         label = new JLabel(caption);
 
         JPanel row = new JPanel();
-        row.add(label, FlowLayout.LEFT);
+        row.add(label);
         row.add(openButton);
 
         add(row);
