@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
  * Date: 07.11.11
  * Time: 19:26
  */
-public class LoadPool
+public class LoadPool implements Pool<Chunk>
 {
     private Queue<Chunk> chunks = new LinkedList<Chunk>();
     protected ExecutorService workers;

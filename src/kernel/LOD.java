@@ -72,4 +72,13 @@ public class LOD
 
         return new LOD(width, height, edge-1, chunks);
     }
+
+    public static LOD createEmpty(int width, int height, int edge)
+    {
+        Chunk chunks[][] = new Chunk[width][height];
+        for (int x = 0; x < width; x++)
+            chunks[x] = new Chunk[height];
+
+        return new LOD(width, height, edge-1, chunks);
+    }
 }

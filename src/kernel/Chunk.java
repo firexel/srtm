@@ -44,6 +44,12 @@ public class Chunk
             azimuthAngle *= -1;
     }
 
+    public Chunk(int number,  short[][] data)
+    {
+        this.filename = new StringBuilder().append(number).append(".hgt").toString();
+        this.data = data;
+    }
+
     public synchronized boolean isLoaded()
     {
         return data != null;
