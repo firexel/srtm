@@ -12,5 +12,5 @@ public class Options
     public int levels = 1;
     public int chunkEdge = 256;
     public String output = "";
-    public Srtm.LOD sourceLod;
+    public LOD sourceLod;
 }

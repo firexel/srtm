@@ -54,7 +54,7 @@ public class Chunk
         data = null;
     }
 
-    public void load() throws IOException
+    public synchronized void load() throws IOException
     {
         String name = path + File.separator + filename;
 
@@ -107,6 +107,11 @@ public class Chunk
         // close file
         bis.close();
         fis.close();
+    }
+
+    public short[][] getData()
+    {
+        return data;
     }
 
     @NotNull

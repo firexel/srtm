@@ -1,7 +1,7 @@
 package ui;
 
 import kernel.Chunk;
-import kernel.Srtm;
+import kernel.LOD;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,15 +12,15 @@ import java.awt.*;
  * Date: 07.11.11
  * Time: 12:04
  */
-public class SrtmCanvas extends JPanel
+public class LodCanvas extends JPanel
 {
-    private Srtm.LOD lod;
+    private LOD lod;
     private static final int CHUNK_DISPLAY_SIZE = 2;
     private static final Color nullChunkColor = new Color(0x555555);
     private static final Color presentChunkColor = new Color(7, 97, 245);
     private static final Color loadedChunkColor = new Color(255, 201, 14);
 
-    public SrtmCanvas(Srtm.LOD lod)
+    public LodCanvas(LOD lod)
     {
         this.lod = lod;
         setDoubleBuffered(true);

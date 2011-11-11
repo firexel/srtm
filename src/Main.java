@@ -1,15 +1,10 @@
-import kernel.Chunk;
-import kernel.LoadPool;
-import kernel.Options;
-import kernel.Srtm;
+import kernel.*;
 import ui.FolderChooser;
 import ui.OptionsView;
-import ui.SrtmCanvas;
+import ui.LodCanvas;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.*;
 
 /**
@@ -21,9 +16,8 @@ import java.util.*;
 public class Main
 {
     private static final int MAX_CHUNKS = 200;
-    private static Srtm srtm;
     private static LoadPool pool;
-    private static SrtmCanvas srtmCanvas;
+    private static LodCanvas lodCanvas;
     private static OptionsView optionsView;
 
     public static void main(String argv[])
@@ -36,26 +30,13 @@ public class Main
         {
             public void onPathSelected(FolderChooser chooser, String path)
             {
-                srtm = new Srtm(path);
-                srtmCanvas = new SrtmCanvas(srtm.getTopLod());
-                frame.add(srtmCanvas, BorderLayout.CENTER);
+                LOD lod = LOD.parseSrtm2(path);
+                lodCanvas = new LodCanvas(lod);
+                frame.add(lodCanvas, BorderLayout.CENTER);
                 optionsView = new OptionsView(new Options());
                 frame.add(optionsView, BorderLayout.SOUTH);
                 frame.pack();
                 frame.repaint();
-
-                Srtm.LOD lod = srtm.getTopLod();
-                for (int x = 0; x < lod.getWidth(); x++)
-                {
-                    for (int y = 0; y < lod.getHeight(); y++)
-                    {
-                        Chunk lodChunk = lod.getChunk(x, y);
-                        if (lodChunk != null)
-                        {
-                            pool.enqueue(lodChunk);
-                        }
-                    }
-                }
             }
         };
         frame.add(new FolderChooser(filePathListener, "Select srtm folder"), BorderLayout.NORTH);
@@ -77,7 +58,5 @@ public class Main
                 frame.repaint();
             }
         });
-
-
     }
 }
