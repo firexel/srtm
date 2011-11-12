@@ -1,4 +1,4 @@
-package kernel;
+package kernel.source;
 
 import junit.framework.Assert;
 import org.junit.Test;

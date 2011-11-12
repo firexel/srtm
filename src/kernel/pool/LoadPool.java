@@ -1,5 +1,7 @@
-package kernel;
+package kernel.pool;
 
+import kernel.chunk.Chunk;
+import kernel.pool.Pool;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;

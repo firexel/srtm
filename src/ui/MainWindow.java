@@ -1,6 +1,6 @@
 package ui;
 
-import kernel.LOD;
+import kernel.chunk.LOD;
 import kernel.Options;
 
 import javax.swing.*;

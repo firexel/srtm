@@ -1,4 +1,8 @@
-package kernel;
+package kernel.source;
+
+import kernel.chunk.LOD;
+import kernel.pool.LoadPool;
+import kernel.chunk.Chunk;
 
 import java.io.IOException;
 

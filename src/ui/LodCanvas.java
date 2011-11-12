@@ -1,7 +1,7 @@
 package ui;
 
-import kernel.Chunk;
-import kernel.LOD;
+import kernel.chunk.Chunk;
+import kernel.chunk.LOD;
 
 import javax.swing.*;
 import java.awt.*;

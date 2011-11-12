@@ -1,4 +1,4 @@
-package kernel;
+package kernel.pool;
 
 /**
  * Created by IntelliJ IDEA.

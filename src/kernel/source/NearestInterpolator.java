@@ -1,4 +1,6 @@
-package kernel;
+package kernel.source;
+
+import kernel.source.DataSource;
 
 /**
  * Created by IntelliJ IDEA.

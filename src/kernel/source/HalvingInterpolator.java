@@ -1,4 +1,4 @@
-package kernel;
+package kernel.source;
 
 /**
  * Created by IntelliJ IDEA.

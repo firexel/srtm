@@ -1,4 +1,4 @@
-package kernel;
+package kernel.chunk;
 
 import com.sun.istack.internal.NotNull;
 
@@ -14,9 +14,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class Chunk
 {
-    private static final int BUFFER_SIZE = 8 * 1024;
     public String filename, path;
-    public int zenithAngle, azimuthAngle;
     public float size;
 
     private boolean bigEndian;

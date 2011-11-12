@@ -1,4 +1,8 @@
-package kernel;
+package kernel.pool;
+
+import kernel.chunk.LOD;
+import kernel.chunk.Chunk;
+import kernel.source.DataSource;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

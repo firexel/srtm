@@ -1,6 +1,8 @@
-package kernel;
+package kernel.pool;
 
 import junit.framework.Assert;
+import kernel.chunk.Chunk;
+import kernel.source.DataSource;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
