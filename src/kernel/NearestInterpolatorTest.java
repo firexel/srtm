@@ -38,16 +38,4 @@ public class NearestInterpolatorTest
         NearestInterpolator interpolator = new NearestInterpolator(mock(DataSource.class), 1, 2);
         Assert.assertEquals(2, interpolator.getHeight());
     }
-
-    @Test
-    public void testIsAvailable() throws Exception
-    {
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getHeight()).thenReturn(2);
-        when(dataSource.getWidth()).thenReturn(2);
-        when(dataSource.isAvailable(0, 0)).thenReturn(true);
-        NearestInterpolator interpolator = new NearestInterpolator(dataSource, 2, 2);
-        Assert.assertEquals(false, interpolator.isAvailable(1, 1));
-        Assert.assertEquals(true, interpolator.isAvailable(0, 0));
-    }
 }

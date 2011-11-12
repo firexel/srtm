@@ -35,9 +35,4 @@ public class NearestInterpolator implements DataSource
     {
         return height;
     }
-
-    public boolean isAvailable(int x, int y)
-    {
-        return source.isAvailable((int) (x * xRatio), (int) (y * yRatio));
-    }
 }

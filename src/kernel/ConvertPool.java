@@ -30,7 +30,7 @@ public class ConvertPool
         width = source.getWidth() / edge;
         height = source.getHeight() / edge;
 
-        maxChunkIndex = (width - 1) * (height - 1);
+        maxChunkIndex = width * height - 1;
         lod = LOD.createEmpty(width, height, edge);
 
         executorService = Executors.newCachedThreadPool();
@@ -78,7 +78,14 @@ public class ConvertPool
                 Chunk chunkObj = new Chunk(chunk, data);
 
                 if(!empty)
+                {
                     savePool.enqueue(chunkObj);
+                    lod.setChunk(x, y, chunkObj);
+                }
+                else
+                {
+                    lod.setChunk(x, y, null);
+                }
             }
         }
     }

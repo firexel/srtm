@@ -1,5 +1,7 @@
 package kernel;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.LinkedList;
@@ -46,6 +48,11 @@ public class LOD
     public Chunk getChunk(int x, int y)
     {
         return chunks[x][y];
+    }
+
+    public void setChunk(int x, int y, @Nullable Chunk chunk)
+    {
+        chunks[x][y] = chunk;
     }
 
     public int getChunkEdge()
