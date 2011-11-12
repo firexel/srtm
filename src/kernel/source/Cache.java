@@ -1,5 +1,7 @@
 package kernel.source;
 
+import kernel.chunk.ChunkLoader;
+import kernel.chunk.ChunkNotLoadedException;
 import kernel.chunk.LOD;
 import kernel.pool.LoadPool;
 import kernel.chunk.Chunk;
@@ -41,9 +43,9 @@ public class Cache implements DataSource
             {
                 try
                 {
-                    chunk.load();
+                    loadPool.loadImmediately(chunk);
                 }
-                catch (IOException e)
+                catch (ChunkNotLoadedException e)
                 {
                     throw new IllegalStateException("Unable to load chunk " + chunk);
                 }

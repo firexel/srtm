@@ -1,6 +1,8 @@
 package kernel.pool;
 
 import kernel.chunk.Chunk;
+import kernel.chunk.ChunkLoader;
+import kernel.chunk.ChunkNotLoadedException;
 import kernel.pool.Pool;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,9 +26,17 @@ public class LoadPool implements Pool<Chunk>
     @Nullable
     protected LoadListener listener;
 
-    public LoadPool(int threads)
+    private ChunkLoader loader;
+
+    public LoadPool(ChunkLoader loader, int threads)
     {
         workers = Executors.newFixedThreadPool(threads);
+        this.loader = loader;
+    }
+
+    public void loadImmediately(Chunk chunk) throws ChunkNotLoadedException
+    {
+        chunk.load(loader);
     }
 
     public synchronized void enqueue(Chunk chunk)
@@ -47,7 +57,7 @@ public class LoadPool implements Pool<Chunk>
 
     private synchronized void dispatchLoaded(Chunk chunk)
     {
-        if(listener != null)
+        if (listener != null)
             listener.onChunkLoaded(chunk);
     }
 
@@ -57,15 +67,17 @@ public class LoadPool implements Pool<Chunk>
         {
             Chunk chunk = pop();
             if (chunk != null)
+            {
                 try
                 {
-                    chunk.load();
+                    chunk.load(loader);
                     dispatchLoaded(chunk);
                 }
-                catch (IOException e)
+                catch (ChunkNotLoadedException e)
                 {
                     e.printStackTrace();
                 }
+            }
         }
     }
 
