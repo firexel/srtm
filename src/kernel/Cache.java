@@ -65,19 +65,12 @@ public class Cache implements DataSource
         return lod.getHeight();
     }
 
-    public boolean isAvailable(int x, int y)
-    {
-        int cx = x / edge;
-        int cy = y / edge;
-        return lod.getChunk(cx, cy) != null;
-    }
-
     private void prefetch(int x, int y)
     {
         if(x < width && x >= 0 && y >= 0 && y < height)
         {
             Chunk chunk = lod.getChunk(x, y);
-            if(chunk != null && !chunk.isLoaded())
+            if(chunk != null)
                 loadPool.enqueue(chunk);
         }
     }
