@@ -8,8 +8,8 @@ package kernel;
  */
 public class Options
 {
-    public int maxLevel = 11;
-    public int levels = 1;
+    public int width = 2;
+    public int height = 1;
     public int chunkEdge = 256;
     public String output = "";
 }

@@ -21,26 +21,39 @@ import java.util.concurrent.Executors;
 public class LoadPool implements Pool<Chunk>
 {
     private Queue<Chunk> chunks = new LinkedList<Chunk>();
-    protected ExecutorService workers;
-
-    @Nullable
-    protected LoadListener listener;
-
+    private ExecutorService workers;
+    @Nullable private LoadListener listener;
     private ChunkLoader loader;
+    private int maxLoaded;
 
-    public LoadPool(ChunkLoader loader, int threads)
+    public LoadPool(ChunkLoader loader, int threads, int maxLoaded)
     {
         workers = Executors.newFixedThreadPool(threads);
         this.loader = loader;
+        this.maxLoaded = maxLoaded;
     }
 
     public void loadImmediately(Chunk chunk) throws ChunkNotLoadedException
     {
-        chunk.load(loader);
+        if (!chunk.isLoaded())
+        {
+            synchronized (this)
+            {
+                ensureCapacity();
+            }
+            chunk.load(loader);
+        }
+    }
+
+    private void ensureCapacity()
+    {
+        if (chunks.size() > maxLoaded)
+            chunks.remove().unload();
     }
 
     public synchronized void enqueue(Chunk chunk)
     {
+        ensureCapacity();
         chunks.add(chunk);
         workers.execute(new LoadTask());
     }

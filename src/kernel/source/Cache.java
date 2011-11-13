@@ -43,6 +43,7 @@ public class Cache implements DataSource
             {
                 try
                 {
+                    System.out.printf("Cache fail for chunk %d %d\n", cx, cy);
                     loadPool.loadImmediately(chunk);
                 }
                 catch (ChunkNotLoadedException e)
@@ -54,8 +55,8 @@ public class Cache implements DataSource
                 prefetch(cx, cy + 1);
                 prefetch(cx + 1, cy +1);
             }
-            x = clip(x, 0, width * edge - 1);
-            y = clip(y, 0, height * edge - 1);
+            x = clip(x % edge, 0, width * edge - 1);
+            y = clip(y % edge, 0, height * edge - 1);
             return chunk.getData()[x][y];
         }
         return 0;
@@ -63,12 +64,12 @@ public class Cache implements DataSource
 
     public int getWidth()
     {
-        return lod.getWidth();
+        return lod.getWidth() * lod.getChunkEdge();
     }
 
     public int getHeight()
     {
-        return lod.getHeight();
+        return lod.getHeight() * lod.getChunkEdge();
     }
 
     private void prefetch(int x, int y)

@@ -79,16 +79,17 @@ public class ConvertPool
                     }
                 }
 
-                Chunk chunkObj = new Chunk(chunk, data);
-
                 if(!empty)
                 {
+                    Chunk chunkObj = new Chunk(chunk, data);
                     savePool.enqueue(chunkObj);
                     lod.setChunk(x, y, chunkObj);
+//                    System.out.printf("Chunk #%d not empty. Saving.\n", chunk);
                 }
                 else
                 {
                     lod.setChunk(x, y, null);
+//                    System.out.printf("Chunk #%d is empty. Skipping.\n", chunk);
                 }
             }
         }

@@ -1,5 +1,6 @@
 package kernel.source;
 
+import com.sun.org.apache.bcel.internal.generic.RET;
 import kernel.source.DataSource;
 
 /**
@@ -25,7 +26,10 @@ public class NearestInterpolator implements DataSource
 
     public short get(int x, int y)
     {
-        return source.get((int) (x * xRatio), (int) (y * yRatio));
+        return source.get(
+                clip((int) (x * xRatio), 0, source.getWidth() - 1),
+                clip((int) (y * yRatio), 0, source.getHeight() - 1)
+        );
     }
 
     public int getWidth()
@@ -36,5 +40,14 @@ public class NearestInterpolator implements DataSource
     public int getHeight()
     {
         return height;
+    }
+
+    private int clip(int val, int min, int max)
+    {
+        if (val < min)
+            return min;
+        if (val > max)
+            return max;
+        return val;
     }
 }

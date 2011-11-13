@@ -41,7 +41,7 @@ public class Chunk
         return data != null;
     }
 
-    public void unload()
+    public synchronized void unload()
     {
         data = null;
     }
@@ -73,7 +73,7 @@ public class Chunk
         }
     }
 
-    public void save(ChunkSaver saver)
+    public void save(String path, ChunkSaver saver)
     {
         FileOutputStream fos = null;
         BufferedOutputStream bos = null;

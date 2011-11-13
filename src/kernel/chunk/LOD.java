@@ -84,7 +84,7 @@ public class LOD
             chunks[azimuthAngle + width / 2][zenithAngle + height / 2] = chunk;
         }
 
-        return new LOD(width, height, edge - 1, chunks);
+        return new LOD(width, height, edge, chunks);
     }
 
     public static LOD createEmpty(int width, int height, int edge)

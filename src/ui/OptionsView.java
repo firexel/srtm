@@ -23,6 +23,13 @@ public class OptionsView extends JPanel implements FolderChooser.FilePathListene
     private JComboBox levelsDropDown, chunkEdgeDropDown;
     private FolderChooser outputFolderChooser;
     private static final int[] edges = new int[]{128, 256, 512};
+    private static final int[][] sizes = new int[][]{
+            {2048, 1024},
+            {1024, 512},
+            {512, 256}
+    };
+    private OnPerformConvertListener listener;
+    private JButton startButton;
 
     public OptionsView(Options options)
     {
@@ -34,13 +41,15 @@ public class OptionsView extends JPanel implements FolderChooser.FilePathListene
         {
             public void itemStateChanged(ItemEvent e)
             {
-                OptionsView.this.options.levels = Integer.parseInt(e.getItem().toString());
+                int index = levelsDropDown.getSelectedIndex();
+                OptionsView.this.options.width = sizes[index][0];
+                OptionsView.this.options.height = sizes[index][1];
             }
         };
         levelsDropDown.addItemListener(levelsDropDownListener);
-        for (int i = 1; i <= options.maxLevel; i++)
-            levelsDropDown.addItem("" + i);
-        levelsDropDown.setSelectedIndex(options.maxLevel - 1);
+        for (int i = 0; i < sizes.length; i++)
+            levelsDropDown.addItem(String.format("%d×%d", sizes[i][0], sizes[i][1]));
+        levelsDropDown.setSelectedIndex(1);
 
         chunkEdgeDropDown = new JComboBox();
         ItemListener chunkEdgeDropDownListener = new ItemListener()
@@ -51,10 +60,10 @@ public class OptionsView extends JPanel implements FolderChooser.FilePathListene
             }
         };
         chunkEdgeDropDown.addItemListener(chunkEdgeDropDownListener);
-        for(int i=0; i<edges.length; i++)
+        for (int i = 0; i < edges.length; i++)
         {
-            chunkEdgeDropDown.addItem(edges[i] + "×" + edges[i]);
-            if(options.chunkEdge == edges[i])
+            chunkEdgeDropDown.addItem(String.format("%d×%d", edges[i], edges[i]));
+            if (options.chunkEdge == edges[i])
                 chunkEdgeDropDown.setSelectedIndex(i);
         }
 
@@ -62,8 +71,9 @@ public class OptionsView extends JPanel implements FolderChooser.FilePathListene
 
         add(outputFolderChooser, BorderLayout.NORTH);
 
-        JButton startButton = new JButton("Convert");
+        startButton = new JButton("Convert");
         startButton.addActionListener(this);
+        startButton.setEnabled(false);
 
         JPanel panel = new JPanel();
         panel.add(new JLabel("Levels:"));
@@ -75,13 +85,28 @@ public class OptionsView extends JPanel implements FolderChooser.FilePathListene
         add(panel, BorderLayout.SOUTH);
     }
 
+    public void setListener(OnPerformConvertListener listener)
+    {
+        this.listener = listener;
+    }
+
     public void onPathSelected(FolderChooser chooser, String path)
     {
         options.output = path;
+        startButton.setEnabled(true);
     }
 
     public void actionPerformed(ActionEvent e)
     {
+        if (e.getSource() == startButton)
+        {
+            if (listener != null)
+                listener.onPerform(options);
+        }
+    }
 
+    public interface OnPerformConvertListener
+    {
+        void onPerform(Options options);
     }
 }
