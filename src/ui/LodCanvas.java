@@ -15,10 +15,11 @@ import java.awt.*;
 public class LodCanvas extends JPanel
 {
     private LOD lod;
-    private static final int CHUNK_DISPLAY_SIZE = 2;
+    private static final int CHUNK_DISPLAY_SIZE = 1;
     private static final Color nullChunkColor = new Color(0x555555);
     private static final Color presentChunkColor = new Color(7, 97, 245);
     private static final Color loadedChunkColor = new Color(255, 201, 14);
+    private boolean showLoading;
 
     public LodCanvas(LOD lod)
     {
@@ -45,7 +46,7 @@ public class LodCanvas extends JPanel
                 Chunk chunk = lod.getChunk(x, y);
                 if (chunk != null)
                 {
-                    if(chunk.isLoaded())
+                    if(showLoading && chunk.isLoaded())
                         g.setColor(loadedChunkColor);
                     else
                         g.setColor(presentChunkColor);
@@ -63,5 +64,10 @@ public class LodCanvas extends JPanel
     public void setLod(LOD lod)
     {
         this.lod = lod;
+    }
+
+    public void showLoading(boolean b)
+    {
+        this.showLoading  = b;
     }
 }

@@ -20,16 +20,15 @@ public class NearestInterpolator implements DataSource
         this.source = source;
         this.width = width;
         this.height = height;
-        xRatio = source.getWidth() / ((double) width);
-        yRatio = source.getHeight() / ((double) height);
+        xRatio = (source.getWidth() / ((double) width));
+        yRatio = (source.getHeight() / ((double) height));
     }
 
     public short get(int x, int y)
     {
-        return source.get(
-                clip((int) (x * xRatio), 0, source.getWidth() - 1),
-                clip((int) (y * yRatio), 0, source.getHeight() - 1)
-        );
+        int nx = clip((int) (x * xRatio), 0, source.getWidth() - 1);
+        int ny = clip((int) (y * yRatio), 0, source.getHeight() - 1);
+        return source.get(nx, ny);
     }
 
     public int getWidth()

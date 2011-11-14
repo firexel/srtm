@@ -34,6 +34,7 @@ public class DefaultSrtmLoader implements ChunkLoader
                 for (int y = 0; y < edge; y++)
                     data[y][x] = dis.readShort();
 
+            dis.close();
             return data;
         }
         catch (IOException ex)

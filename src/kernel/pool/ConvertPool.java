@@ -25,7 +25,7 @@ public class ConvertPool
     private LOD lod;
     private Pool<Chunk> savePool;
 
-    public ConvertPool(DataSource source, Pool<Chunk> savePool, int edge, int threads)
+    public ConvertPool(DataSource source, Pool<Chunk> savePool, int edge)
     {
         this.edge = edge;
         this.source = source;
@@ -36,15 +36,20 @@ public class ConvertPool
 
         maxChunkIndex = width * height - 1;
         lod = LOD.createEmpty(width, height, edge);
+    }
 
+    public LOD start(int threads)
+    {
         executorService = Executors.newCachedThreadPool();
         for (int i = 0; i < threads; i++)
             executorService.execute(new Converter());
+
+        return lod;
     }
 
     private synchronized int getNextChunkNumber()
     {
-        if(chunkNumber > maxChunkIndex)
+        if (chunkNumber > maxChunkIndex)
             return -1;
 
         return chunkNumber++;
@@ -57,41 +62,43 @@ public class ConvertPool
             int chunk;
             while ((chunk = getNextChunkNumber()) != -1)
             {
-                int x = chunk / width;
-                int y = chunk % height;
+                int x = chunk / height;
+                int y = chunk - x*height;
 
-                int offsetX = x * width;
-                int offsetY = y * height;
+                int offsetX = x * edge;
+                int offsetY = y * edge;
 
                 short data[][] = new short[edge][edge];
                 short value;
 
                 boolean empty = true;
 
-                for(int i=0; i<edge; i++)
+                for (int i = 0; i < edge; i++)
                 {
-                    for(int j=0; j<edge; j++)
+                    for (int j = 0; j < edge; j++)
                     {
-                        value = source.get(i+offsetX, j+offsetY);
+                        value = source.get(i + offsetX, j + offsetY);
                         data[i][j] = value;
-                        if(value != 0)
+                        if (value != 0)
                             empty = false;
                     }
                 }
 
-                if(!empty)
+                synchronized (ConvertPool.this)
                 {
-                    Chunk chunkObj = new Chunk(chunk, data);
-                    savePool.enqueue(chunkObj);
-                    lod.setChunk(x, y, chunkObj);
-//                    System.out.printf("Chunk #%d not empty. Saving.\n", chunk);
-                }
-                else
-                {
-                    lod.setChunk(x, y, null);
-//                    System.out.printf("Chunk #%d is empty. Skipping.\n", chunk);
+                    if (!empty)
+                    {
+                        Chunk chunkObj = new Chunk(chunk, data);
+                        savePool.enqueue(chunkObj);
+                        lod.setChunk(x, y, chunkObj);
+                    }
+                    else
+                    {
+                        lod.setChunk(x, y, null);
+                    }
                 }
             }
+            System.out.printf("%s thread finished\n", Thread.currentThread().getName());
         }
     }
 }

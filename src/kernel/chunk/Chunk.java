@@ -84,8 +84,11 @@ public class Chunk
             bos = new BufferedOutputStream(fos, BUFFER_SIZE);
 
             saver.save(data, bos);
+            bos.flush();
+            bos.close();
+            fos.close();
         }
-        catch (FileNotFoundException e)
+        catch (IOException e)
         {
             System.err.println("Error during saving chunk " + filename);
         }

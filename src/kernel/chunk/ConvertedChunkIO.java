@@ -22,6 +22,7 @@ public class ConvertedChunkIO implements ChunkLoader, ChunkSaver
                 for (int y = 0; y < edge; y++)
                     data[y][x] = dis.readShort();
 
+            dis.close();
             return data;
         }
         catch (IOException ex)
@@ -45,6 +46,8 @@ public class ConvertedChunkIO implements ChunkLoader, ChunkSaver
             for(int x=0; x< length; x++)
                 for(int y=0; y< length; y++)
                     dos.writeShort(data[x][y]);
+
+            dos.close();
         }
         catch (IOException e)
         {

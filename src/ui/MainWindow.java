@@ -11,6 +11,8 @@ import kernel.source.NearestInterpolator;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,7 +27,19 @@ public class MainWindow extends JFrame implements FolderChooser.FilePathListener
 
     // views
     private LodCanvas lodCanvas;
-    private OptionsView optionsView;
+    private OptionsView optionsView;    
+
+    // util
+    private Timer timer;
+    private ActionListener actionListener = new ActionListener()
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            lodCanvas.repaint();
+            timer = new Timer(1000, actionListener);
+            timer.start();
+        }
+    };
 
     public MainWindow() throws HeadlessException
     {
@@ -67,12 +81,24 @@ public class MainWindow extends JFrame implements FolderChooser.FilePathListener
         );
         ChunkLoader loader = new DefaultSrtmLoader();
         ChunkSaver saver = new ConvertedChunkIO();
-        LoadPool loadPool = new LoadPool(loader, 1, 180);
+        LoadPool loadPool = new LoadPool(loader, 1, 160);
         SavePool savePool = new SavePool(saver, options.output, 1);
         Cache cache = new Cache(lod, loadPool);
         int width = options.width * options.chunkEdge;
         int height = options.height * options.chunkEdge;
         DataSource interpolator = new NearestInterpolator(cache, width, height);
-        new ConvertPool(interpolator, savePool, options.chunkEdge, 4);
+        ConvertPool pool = new ConvertPool(interpolator, savePool, options.chunkEdge);
+        LOD lod = pool.start(2);
+        lodCanvas.setLod(lod);
+        lodCanvas.showLoading(false);
+        lodCanvas.repaint();
+        pack();
+        startUpdating();
+    }
+
+    private void startUpdating()
+    {
+        timer = new Timer(1000, actionListener);
+        timer.start();
     }
 }

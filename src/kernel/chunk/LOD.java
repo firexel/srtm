@@ -93,6 +93,6 @@ public class LOD
         for (int x = 0; x < width; x++)
             chunks[x] = new Chunk[height];
 
-        return new LOD(width, height, edge - 1, chunks);
+        return new LOD(width, height, edge, chunks);
     }
 }

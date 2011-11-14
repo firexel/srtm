@@ -33,7 +33,8 @@ public class ConvertPoolTest
         when(source.get(anyInt(), anyInt())).thenReturn((short)1);
         when(source.getHeight()).thenReturn(2);
         when(source.getWidth()).thenReturn(2);
-        ConvertPool convertPool = new ConvertPool(source, mockSavePool, 1, 3);
+        ConvertPool convertPool = new ConvertPool(source, mockSavePool, 1);
+        convertPool.start(3);
         latch.await(1, TimeUnit.SECONDS);
         Assert.assertEquals(0, latch.getCount());
     }

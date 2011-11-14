@@ -48,7 +48,9 @@ public class LoadPool implements Pool<Chunk>
     private void ensureCapacity()
     {
         if (chunks.size() > maxLoaded)
+        {
             chunks.remove().unload();
+        }
     }
 
     public synchronized void enqueue(Chunk chunk)
