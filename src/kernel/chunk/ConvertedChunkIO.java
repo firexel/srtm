@@ -54,4 +54,9 @@ public class ConvertedChunkIO implements ChunkLoader, ChunkSaver
             throw new ChunkNotSavedException(e);
         }
     }
+
+    public short[][] load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException
+    {
+        return new short[0][];
+    }
 }

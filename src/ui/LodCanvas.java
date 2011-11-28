@@ -46,10 +46,7 @@ public class LodCanvas extends JPanel
                 Chunk chunk = lod.getChunk(x, y);
                 if (chunk != null)
                 {
-                    if(showLoading && chunk.isLoaded())
-                        g.setColor(loadedChunkColor);
-                    else
-                        g.setColor(presentChunkColor);
+                    g.setColor(presentChunkColor);
                 }
                 else
                 {
@@ -68,6 +65,6 @@ public class LodCanvas extends JPanel
 
     public void showLoading(boolean b)
     {
-        this.showLoading  = b;
+        this.showLoading = b;
     }
 }

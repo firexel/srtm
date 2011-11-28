@@ -23,9 +23,9 @@ public class ConvertPool
     private int width;
     private int height;
     private LOD lod;
-    private Pool<Chunk> savePool;
+    private Pool<ChunkSaveInfo> savePool;
 
-    public ConvertPool(DataSource source, Pool<Chunk> savePool, int edge)
+    public ConvertPool(DataSource source, Pool<ChunkSaveInfo> savePool, int edge)
     {
         this.edge = edge;
         this.source = source;
@@ -63,41 +63,29 @@ public class ConvertPool
             while ((chunk = getNextChunkNumber()) != -1)
             {
                 int x = chunk / height;
-                int y = chunk - x*height;
+                int y = chunk - x * height;
 
                 int offsetX = x * edge;
                 int offsetY = y * edge;
 
-                short data[][] = new short[edge][edge];
-                short value;
+                short data[][] = source.get(offsetX, offsetY, edge, edge);
 
                 boolean empty = true;
 
                 for (int i = 0; i < edge; i++)
-                {
                     for (int j = 0; j < edge; j++)
-                    {
-                        value = source.get(i + offsetX, j + offsetY);
-                        data[i][j] = value;
-                        if (value != 0)
+                        if (data[i][j] != 0)
                             empty = false;
-                    }
-                }
 
-                synchronized (ConvertPool.this)
+                if (!empty)
                 {
-                    if (!empty)
+                    synchronized (ConvertPool.this)
                     {
-                        Chunk chunkObj = new Chunk(chunk, data);
-                        savePool.enqueue(chunkObj);
-                        lod.setChunk(x, y, chunkObj);
-                    }
-                    else
-                    {
-                        lod.setChunk(x, y, null);
+                        savePool.enqueue(new ChunkSaveInfo(chunk, edge, data));
                     }
                 }
             }
+            
             System.out.printf("%s thread finished\n", Thread.currentThread().getName());
         }
     }

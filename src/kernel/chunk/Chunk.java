@@ -1,6 +1,8 @@
 package kernel.chunk;
 
 import com.sun.istack.internal.NotNull;
+import kernel.source.DataSource;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.zip.ZipEntry;
@@ -12,71 +14,35 @@ import java.util.zip.ZipOutputStream;
  * Date: 31.10.11
  * Time: 6:17
  */
-public class Chunk
+public class Chunk implements DataSource
 {
-    public String filename, path;
+    private String filename, path;
     private int edge;
-    private short data[][];
-    private static final int BUFFER_SIZE = 1024 * 8;
+    private ChunkLoader loader;
+    private static final int BUFFER_SIZE = 8 * 1024;
 
-    public Chunk()
-    {
-    }
-
-    public Chunk(String path, String filename, int edge)
+    public Chunk(String path, String filename, int edge, @Nullable ChunkLoader chunkLoader)
     {
         this.path = path;
         this.filename = filename;
         this.edge = edge;
+        this.loader = chunkLoader;
     }
 
-    public Chunk(int number, short[][] data)
+    public Chunk(int number, int edge)
     {
-        this.filename = new StringBuilder().append(number).append(".hgt").toString();
-        this.data = data;
+        this("", number + ".hgt", edge, null);
     }
 
-    public synchronized boolean isLoaded()
+    public void setPath(String path)
     {
-        return data != null;
+        this.path = path;
     }
 
-    public synchronized void unload()
+    public void save(ChunkSaver saver, short[][] data)
     {
-        data = null;
-    }
-
-    public synchronized void load(ChunkLoader loader) throws ChunkNotLoadedException
-    {
-        String name = path + File.separator + filename;
-
-        FileInputStream fis;
-        try
-        {
-            fis = new FileInputStream(name);
-        }
-        catch (FileNotFoundException e)
-        {
-            throw new ChunkNotLoadedException(e);
-        }
-
-        BufferedInputStream bis = new BufferedInputStream(fis, BUFFER_SIZE);
-        try
-        {
-            data = loader.load(bis);
-            bis.close();
-            fis.close();
-        }
-        catch (IOException e)
-        {
-            throw new ChunkNotLoadedException(e);
-        }
-    }
-
-    public void save(String path, ChunkSaver saver)
-    {
-        FileOutputStream fos = null;
-        BufferedOutputStream bos = null;
+        FileOutputStream fos;
+        BufferedOutputStream bos;
         try
         {
             String nPath = path + File.separator + filename;
@@ -96,22 +62,34 @@ public class Chunk
         {
             System.err.println("Error during saving chunk " + filename);
         }
-        finally
+    }
+
+    public synchronized short[][] get(int x, int y, int width, int height)
+    {
+        try
         {
-            try
-            {
-                bos.flush();
-                bos.close();
-                fos.close();
-            }
-            catch (Exception e)
-            {
-            }
+            RandomAccessFile file = new RandomAccessFile(path + File.separator + filename, "r");
+            short[][] data = loader.load(file, x, y, width, height);
+            file.close();
+            return data;
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new ChunkNotLoadedException(e);
+        }
+        catch (IOException e)
+        {
+            throw new ChunkNotLoadedException(e);
         }
     }
 
-    public short[][] getData()
+    public int getWidth()
     {
-        return data;
+        return edge;
+    }
+
+    public int getHeight()
+    {
+        return edge;
     }
 }

@@ -1,6 +1,8 @@
 package kernel.source;
 
 import junit.framework.Assert;
+import kernel.util.MatrixUtils;
+import kernel.util.MockSource;
 import org.junit.Test;
 
 import static org.mockito.Mockito.*;
@@ -13,16 +15,36 @@ import static org.mockito.Mockito.*;
  */
 public class NearestInterpolatorTest
 {
-    @Test
-    public void testGet() throws Exception
-    {
-        DataSource dataSource = mock(DataSource.class);
-        NearestInterpolator interpolator = new NearestInterpolator(dataSource, 2, 2);
-        for(int x=0; x<2; x++)
-            for(int y=0; y<2; y++)
-                interpolator.get(x, y);
+    private short[][] data = new short[][]{
+            {1, 10, 2, 10},
+            {10, 10, 10, 10},
+            {3, 10, 4, 10},
+            {10, 10, 10, 10}
+    };
 
-        verify(dataSource, times(4)).get(anyInt(), anyInt());
+    @Test
+    public void testGet2() throws Exception
+    {
+        DataSource dataSource = new MockSource(data);
+        NearestInterpolator interpolator = new NearestInterpolator(dataSource, 2, 2);
+        short[][] data = interpolator.get(0, 0, 2, 2);
+        short[][] assertData = new short[][]{
+                {1, 2},
+                {3, 4}
+        };
+        Assert.assertTrue(MatrixUtils.equals(data, assertData));
+    }
+
+    @Test
+    public void testGet1() throws Exception
+    {
+        DataSource dataSource = new MockSource(data);
+        NearestInterpolator interpolator = new NearestInterpolator(dataSource, 2, 2);
+        short[][] data = interpolator.get(1, 1, 1, 1);
+        short[][] assertData = new short[][]{
+                {4}
+        };
+        Assert.assertTrue(MatrixUtils.equals(data, assertData));
     }
 
     @Test
@@ -38,4 +60,5 @@ public class NearestInterpolatorTest
         NearestInterpolator interpolator = new NearestInterpolator(mock(DataSource.class), 1, 2);
         Assert.assertEquals(2, interpolator.getHeight());
     }
+
 }

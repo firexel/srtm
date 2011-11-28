@@ -3,6 +3,7 @@ package kernel.pool;
 import junit.framework.Assert;
 import kernel.chunk.Chunk;
 import kernel.source.DataSource;
+import kernel.util.MatrixUtils;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -22,17 +23,30 @@ public class ConvertPoolTest
     public void testLaunch() throws InterruptedException
     {
         final CountDownLatch latch = new CountDownLatch(4);
-        Pool<Chunk> mockSavePool = new Pool<Chunk>()
+        Pool<ChunkSaveInfo> mockSavePool = new Pool<ChunkSaveInfo>()
         {
-            public void enqueue(Chunk object)
+            public void enqueue(ChunkSaveInfo object)
             {
                 latch.countDown();
             }
         };
-        DataSource source = mock(DataSource.class);
-        when(source.get(anyInt(), anyInt())).thenReturn((short)1);
-        when(source.getHeight()).thenReturn(2);
-        when(source.getWidth()).thenReturn(2);
+        DataSource source = new DataSource()
+        {
+            public short[][] get(int x, int y, int width, int height)
+            {
+                return MatrixUtils.fill(width, height, (short) 1);
+            }
+
+            public int getWidth()
+            {
+                return 2;
+            }
+
+            public int getHeight()
+            {
+                return 2;
+            }
+        };
         ConvertPool convertPool = new ConvertPool(source, mockSavePool, 1);
         convertPool.start(3);
         latch.await(1, TimeUnit.SECONDS);

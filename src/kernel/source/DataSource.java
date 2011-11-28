@@ -8,7 +8,7 @@ package kernel.source;
  */
 public interface DataSource
 {
-    short get(int x, int y);
+    short[][] get(int x, int y, int width, int height);
     int getWidth();
     int getHeight();
 }

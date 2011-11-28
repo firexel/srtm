@@ -8,7 +8,7 @@ import java.io.IOException;
  * Date: 13.11.11
  * Time: 0:45
  */
-public class ChunkNotLoadedException extends Exception
+public class ChunkNotLoadedException extends RuntimeException
 {
     public ChunkNotLoadedException(Throwable e)
     {

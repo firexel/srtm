@@ -1,6 +1,7 @@
 package kernel.source;
 
 import com.sun.org.apache.bcel.internal.generic.RET;
+import com.sun.xml.internal.stream.StaxXMLInputSource;
 import kernel.source.DataSource;
 
 /**
@@ -24,11 +25,30 @@ public class NearestInterpolator implements DataSource
         yRatio = (source.getHeight() / ((double) height));
     }
 
-    public short get(int x, int y)
+    public short[][] get(int x, int y, int width, int height)
     {
+        if (x + (width - 1) > getWidth())
+            throw new IllegalArgumentException(String.format("Too large width (x=%d, width=%d)", x, width));
+
+        if (y + (height - 1) > getHeight())
+            throw new IllegalArgumentException(String.format("Too large height (y=%d, height=%d)", y, height));
+
         int nx = clip((int) (x * xRatio), 0, source.getWidth() - 1);
         int ny = clip((int) (y * yRatio), 0, source.getHeight() - 1);
-        return source.get(nx, ny);
+        int nw = clip((int) (width * xRatio), 0, source.getWidth() - nx);
+        int nh = clip((int) (height * yRatio), 0, source.getHeight() - ny);
+        short[][] src = source.get(nx, ny, nw, nh);
+        short[][] result = new short[width][height];
+        for (int ix = 0; ix < width; ix++)
+        {
+            for (int iy = 0; iy < height; iy++)
+            {
+                int sx = clip((int) (ix * xRatio), 0, nw);
+                int sy = clip((int) (iy * yRatio), 0, nh);
+                result[ix][iy] = src[sx][sy];
+            }
+        }
+        return result;
     }
 
     public int getWidth()

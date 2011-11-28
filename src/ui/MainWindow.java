@@ -3,9 +3,8 @@ package ui;
 import kernel.chunk.*;
 import kernel.Options;
 import kernel.pool.ConvertPool;
-import kernel.pool.LoadPool;
 import kernel.pool.SavePool;
-import kernel.source.Cache;
+import kernel.source.GridDataSource;
 import kernel.source.DataSource;
 import kernel.source.NearestInterpolator;
 
@@ -79,14 +78,12 @@ public class MainWindow extends JFrame implements FolderChooser.FilePathListener
         System.out.printf("Start converting to %s int format %d*%d. Chunk size: %d\n",
                 options.output, options.width, options.height, options.chunkEdge
         );
-        ChunkLoader loader = new DefaultSrtmLoader();
         ChunkSaver saver = new ConvertedChunkIO();
-        LoadPool loadPool = new LoadPool(loader, 1, 160);
         SavePool savePool = new SavePool(saver, options.output, 1);
-        Cache cache = new Cache(lod, loadPool);
+        GridDataSource gridDataSource = new GridDataSource(lod.getGrid());
         int width = options.width * options.chunkEdge;
         int height = options.height * options.chunkEdge;
-        DataSource interpolator = new NearestInterpolator(cache, width, height);
+        DataSource interpolator = new NearestInterpolator(gridDataSource, width, height);
         ConvertPool pool = new ConvertPool(interpolator, savePool, options.chunkEdge);
         LOD lod = pool.start(2);
         lodCanvas.setLod(lod);

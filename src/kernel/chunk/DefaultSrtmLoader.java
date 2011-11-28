@@ -3,6 +3,7 @@ package kernel.chunk;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,5 +42,10 @@ public class DefaultSrtmLoader implements ChunkLoader
         {
             throw new ChunkNotLoadedException(ex);
         }
+    }
+
+    public short[][] load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException
+    {
+        return new short[0][];
     }
 }

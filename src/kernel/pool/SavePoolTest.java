@@ -1,8 +1,8 @@
 package kernel.pool;
 
-import com.sun.rowset.internal.InsertRow;
 import junit.framework.Assert;
 import kernel.chunk.Chunk;
+import kernel.chunk.ChunkLoader;
 import kernel.chunk.ChunkNotSavedException;
 import kernel.chunk.ChunkSaver;
 import org.junit.Test;
@@ -26,26 +26,23 @@ public class SavePoolTest
     @Test
     public void testEnqueue() throws Exception
     {
-        SavePool pool = new SavePool(mock(ChunkSaver.class), "", 1);
-        for(int i = 0; i<4; i++)
-            pool.enqueue(new MockChunk());
+        SavePool pool = new SavePool(new ChunkSaver()
+        {
+            public void save(short[][] data, OutputStream stream) throws ChunkNotSavedException
+            {
+                latch.countDown();
+            }
+        }, "", 1);
         
+        for (int i = 0; i < 4; i++)
+        {
+            ChunkSaveInfo info = new ChunkSaveInfo(i, 1, new short[1][1]);
+            pool.enqueue(info);
+        }
+
         latch.await(1, TimeUnit.SECONDS);
         Assert.assertEquals(0, latch.getCount());
     }
 
-    private class MockChunk extends Chunk
-    {
-        @Override
-        public void save(String path, ChunkSaver saver)
-        {
-            latch.countDown();
-        }
 
-        @Override
-        public boolean isLoaded()
-        {
-            return true;
-        }
-    }
 }

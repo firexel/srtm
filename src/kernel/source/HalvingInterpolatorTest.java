@@ -1,7 +1,11 @@
 package kernel.source;
 
 import junit.framework.Assert;
+import kernel.util.MatrixUtils;
+import kernel.util.MockSource;
 import org.junit.Test;
+
+import java.nio.channels.NonWritableChannelException;
 
 import static org.mockito.Mockito.*;
 
@@ -13,20 +17,24 @@ import static org.mockito.Mockito.*;
  */
 public class HalvingInterpolatorTest
 {
+    private short[][] data = new short[][]{
+            {1, 1, 2, 2},
+            {1, 1, 2, 2},
+            {3, 3, 4, 4},
+            {3, 3, 4, 4}
+    };
+
+    private short[][] assertResult = new short[][]{
+            {1, 2},
+            {3, 4}
+    };
+
     @Test
     public void testGet() throws Exception
     {
-        DataSource source = mock(DataSource.class);
-        when(source.get(0, 0)).thenReturn((short) 10);
-        when(source.get(1, 0)).thenReturn((short) 1);
-        when(source.get(0, 1)).thenReturn((short) 2);
-        when(source.get(1, 1)).thenReturn((short) 3);
-        when(source.getWidth()).thenReturn(2);
-        when(source.getHeight()).thenReturn(2);
-
+        DataSource source = new MockSource(data);
         HalvingInterpolator interpolator = new HalvingInterpolator(source);
-        Assert.assertEquals(4, interpolator.get(0, 0)); // (10 + 1 + 2 + 3) / 4 = 16 / 4 = 4
-        verify(source, times(4)).get(anyInt(), anyInt());
+        Assert.assertTrue(MatrixUtils.equals(assertResult, interpolator.get(0, 0, 2, 2)));
     }
 
     @Test

@@ -1,6 +1,6 @@
 package kernel.chunk;
 
-import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,5 +10,5 @@ import java.io.InputStream;
  */
 public interface ChunkLoader
 {
-    short[][] load(InputStream stream) throws ChunkNotLoadedException;
+    short[][] load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException;
 }

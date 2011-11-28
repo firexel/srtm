@@ -1,5 +1,6 @@
 package kernel.chunk;
 
+import kernel.source.DataSource;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -64,6 +65,8 @@ public class LOD
         int height = 180;
         int edge = 1201;
 
+        ChunkLoader loader = new DefaultSrtmLoader(edge);
+
         Chunk chunks[][] = new Chunk[width][height];
         for (int x = 0; x < width; x++)
             chunks[x] = new Chunk[height];
@@ -71,7 +74,7 @@ public class LOD
         File folder = new File(path);
         for (String filename : folder.list(HGT_FILTER))
         {
-            Chunk chunk = new Chunk(path, filename, edge);
+            Chunk chunk = new Chunk(path, filename, edge, loader);
 
             int zenithAngle = Integer.parseInt(filename.substring(1, 3), 10);
             if (filename.charAt(0) == 'N')
@@ -94,5 +97,10 @@ public class LOD
             chunks[x] = new Chunk[height];
 
         return new LOD(width, height, edge, chunks);
+    }
+
+    public DataSource[][] getGrid()
+    {
+        return chunks;
     }
 }

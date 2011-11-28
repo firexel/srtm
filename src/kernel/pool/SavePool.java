@@ -15,28 +15,30 @@ import java.util.concurrent.Executors;
  * Date: 13.11.11
  * Time: 22:50
  */
-public class SavePool implements Pool<Chunk>
+public class SavePool implements Pool<ChunkSaveInfo>
 {
     private ExecutorService executorService;
-    private Queue<Chunk> chunks = new LinkedList<Chunk>();
+    private Queue<ChunkSaveInfo> chunks = new LinkedList<ChunkSaveInfo>();
     private ChunkSaver saver;
-    private String path;
+    private String folder;
 
-    public SavePool(ChunkSaver saver, String path, int threads)
+    public SavePool(ChunkSaver saver, String folder, int threads)
     {
+        this.folder = folder;
         this.saver = saver;
-        this.path = path;
         executorService = Executors.newFixedThreadPool(threads);
     }
 
-    public synchronized void enqueue(Chunk object)
+    public synchronized void enqueue(ChunkSaveInfo object)
     {
         chunks.add(object);
         executorService.execute(new SaveChunkTask());
+        if(chunks.size() > 200)
+            System.out.printf("SavePool overloaded (%d chunks in queue)", chunks.size());
     }
 
     @Nullable
-    private synchronized Chunk getNexChunk()
+    private synchronized ChunkSaveInfo getNexChunk()
     {
         return chunks.poll();
     }
@@ -45,12 +47,13 @@ public class SavePool implements Pool<Chunk>
     {
         public void run()
         {
-            Chunk chunk = getNexChunk();
-            if(chunk != null && chunk.isLoaded())
+            ChunkSaveInfo info = getNexChunk();
+            if(info != null && info.data != null && saver != null)
             {
-                chunk.save(path, saver);
-                chunk.unload();
+                Chunk chunk = new Chunk(folder, info.chunkNumber + ".hgt", info.chunkEdge, null);
+                chunk.save(saver, info.data);
             }
         }
     }
+
 }
