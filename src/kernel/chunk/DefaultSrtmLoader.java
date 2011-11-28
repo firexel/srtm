@@ -1,5 +1,8 @@
 package kernel.chunk;
 
+import com.sun.xml.internal.txw2.output.IndentingXMLFilter;
+import kernel.util.MatrixUtils;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,37 +18,40 @@ public class DefaultSrtmLoader implements ChunkLoader
 {
     private int edge;
 
-    public DefaultSrtmLoader()
-    {
-        edge = 1201;
-    }
-
     public DefaultSrtmLoader(int edge)
     {
         this.edge = edge;
     }
 
-    public short[][] load(InputStream stream) throws ChunkNotLoadedException
-    {
-        short data[][] = new short[edge][edge];
-        DataInputStream dis = new DataInputStream(stream);
-        try
-        {
-            for (int x = 0; x < edge; x++)
-                for (int y = 0; y < edge; y++)
-                    data[y][x] = dis.readShort();
-
-            dis.close();
-            return data;
-        }
-        catch (IOException ex)
-        {
-            throw new ChunkNotLoadedException(ex);
-        }
-    }
-
     public short[][] load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException
     {
-        return new short[0][];
+        if (x + width - 1 > edge)
+            throw new ChunkNotLoadedException("Width too large :" + (x + width - 1));
+
+        if (y + height - 1 > edge)
+            throw new ChunkNotLoadedException("Height too large :" + (y + height - 1));
+
+        short[][] result = new short[height][width];
+        byte[] row = new byte[width * 2];
+        try
+        {
+            for (int iy = y; iy < y + height; iy++)
+            {
+                file.seek((iy * edge + x) * 2);
+                file.read(row);
+                for (int ix = 0; ix < width; ix++)
+                {
+                    int sh = row[ix * 2];
+                    sh = sh << 8;
+                    sh |= row[ix * 2 + 1];
+                    result[iy - y][ix] = (short) sh;
+                }
+            }
+            return result;
+        }
+        catch (IOException e)
+        {
+            throw new ChunkNotLoadedException(e);
+        }
     }
 }

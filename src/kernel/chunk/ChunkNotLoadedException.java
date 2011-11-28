@@ -10,6 +10,11 @@ import java.io.IOException;
  */
 public class ChunkNotLoadedException extends RuntimeException
 {
+    public ChunkNotLoadedException(String message)
+    {
+        super(message);
+    }
+
     public ChunkNotLoadedException(Throwable e)
     {
         super(e);
