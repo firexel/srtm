@@ -1,7 +1,6 @@
 package kernel.source;
 
-import javax.xml.crypto.dsig.spec.XPathFilter2ParameterSpec;
-
+import kernel.util.Matrix;
 /**
  * Created by IntelliJ IDEA.
  * User: alex
@@ -25,7 +24,7 @@ public class HalvingInterpolator implements DataSource
         }
     }
 
-    public short[][] get(int x, int y, int width, int height)
+    public Matrix get(int x, int y, int width, int height)
     {
         if (x + (width - 1) > getWidth())
             throw new IllegalArgumentException(String.format("Too large width (x=%d, width=%d)", x, width));
@@ -33,18 +32,18 @@ public class HalvingInterpolator implements DataSource
         if (y + (height - 1) > getHeight())
             throw new IllegalArgumentException(String.format("Too large height (y=%d, height=%d)", y, height));
 
-        short[][] result = new short[width][height];
-        short[][] data = source.get(x * 2, y * 2, width * 2, height * 2);
+        Matrix result = new Matrix(width, height);
+        Matrix data = source.get(x * 2, y * 2, width * 2, height * 2);
         for (int ix = x; ix < width; ix++)
         {
             for (int iy = y; iy < height; iy++)
             {
-                int sum = data[ix*2][iy*2]
-                        + data[ix*2 + 1][iy*2]
-                        + data[ix*2][iy*2 + 1]
-                        + data[ix*2+1][iy*2+1];
+                int sum = data.get(ix*2, iy*2)
+                        + data.get(ix*2 + 1, iy*2)
+                        + data.get(ix*2, iy*2 + 1)
+                        + data.get(ix*2+1, iy*2+1);
 
-                result[ix][iy] = (short) (sum / 4);
+                result.set(ix, iy, sum / 4);
             }
         }
         return result;

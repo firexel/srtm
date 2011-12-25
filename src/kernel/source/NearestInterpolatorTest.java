@@ -1,11 +1,11 @@
 package kernel.source;
 
 import junit.framework.Assert;
-import kernel.util.MatrixUtils;
+import kernel.util.Matrix;
 import kernel.util.MockSource;
 import org.junit.Test;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,12 +27,11 @@ public class NearestInterpolatorTest
     {
         DataSource dataSource = new MockSource(data);
         NearestInterpolator interpolator = new NearestInterpolator(dataSource, 2, 2);
-        short[][] data = interpolator.get(0, 0, 2, 2);
-        short[][] assertData = new short[][]{
+        Matrix data = interpolator.get(0, 0, 2, 2);
+        Assert.assertTrue(data.equals(new short[][]{
                 {1, 2},
                 {3, 4}
-        };
-        Assert.assertTrue(MatrixUtils.equals(data, assertData));
+        }));
     }
 
     @Test
@@ -40,11 +39,8 @@ public class NearestInterpolatorTest
     {
         DataSource dataSource = new MockSource(data);
         NearestInterpolator interpolator = new NearestInterpolator(dataSource, 2, 2);
-        short[][] data = interpolator.get(1, 1, 1, 1);
-        short[][] assertData = new short[][]{
-                {4}
-        };
-        Assert.assertTrue(MatrixUtils.equals(data, assertData));
+        Matrix data = interpolator.get(1, 1, 1, 1);
+        Assert.assertTrue(data.equals(new Matrix(1, 1, 4)));
     }
 
     @Test

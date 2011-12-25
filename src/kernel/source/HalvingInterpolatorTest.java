@@ -1,13 +1,11 @@
 package kernel.source;
 
 import junit.framework.Assert;
-import kernel.util.MatrixUtils;
 import kernel.util.MockSource;
 import org.junit.Test;
 
-import java.nio.channels.NonWritableChannelException;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,7 +32,9 @@ public class HalvingInterpolatorTest
     {
         DataSource source = new MockSource(data);
         HalvingInterpolator interpolator = new HalvingInterpolator(source);
-        Assert.assertTrue(MatrixUtils.equals(assertResult, interpolator.get(0, 0, 2, 2)));
+        Assert.assertTrue(
+                interpolator.get(0, 0, 2, 2).equals(assertResult)
+        );
     }
 
     @Test

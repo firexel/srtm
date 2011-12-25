@@ -1,8 +1,6 @@
 package kernel.source;
 
-import com.sun.org.apache.bcel.internal.generic.RET;
-import com.sun.xml.internal.stream.StaxXMLInputSource;
-import kernel.source.DataSource;
+import kernel.util.Matrix;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,7 +23,7 @@ public class NearestInterpolator implements DataSource
         yRatio = (source.getHeight() / ((double) height));
     }
 
-    public short[][] get(int x, int y, int width, int height)
+    public Matrix get(int x, int y, int width, int height)
     {
         if (x + (width - 1) > getWidth())
             throw new IllegalArgumentException(String.format("Too large width (x=%d, width=%d)", x, width));
@@ -37,15 +35,16 @@ public class NearestInterpolator implements DataSource
         int ny = clip((int) (y * yRatio), 0, source.getHeight() - 1);
         int nw = clip((int) (width * xRatio), 0, source.getWidth() - nx);
         int nh = clip((int) (height * yRatio), 0, source.getHeight() - ny);
-        short[][] src = source.get(nx, ny, nw, nh);
-        short[][] result = new short[width][height];
+        
+        Matrix src = source.get(nx, ny, nw, nh);
+        Matrix result = new Matrix(width, height);
         for (int ix = 0; ix < width; ix++)
         {
             for (int iy = 0; iy < height; iy++)
             {
                 int sx = clip((int) (ix * xRatio), 0, nw);
                 int sy = clip((int) (iy * yRatio), 0, nh);
-                result[ix][iy] = src[sx][sy];
+                result.set(ix, iy, src.get(sx, sy));
             }
         }
         return result;

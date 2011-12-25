@@ -1,10 +1,9 @@
 package kernel.chunk;
 
 import junit.framework.Assert;
-import kernel.util.MatrixUtils;
+import kernel.util.Matrix;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
@@ -44,17 +43,13 @@ public class DefaultSrtmLoaderTest
 
         RandomAccessFile file = new RandomAccessFile("DefaultSrtmLoaderTest", "r");
         DefaultSrtmLoader loader = new DefaultSrtmLoader(9);
-        short[][] data = loader.load(file, 2, 2, 5, 5);
-        short[][] assertData = new short[][]{
+        Matrix data = loader.load(file, 2, 2, 5, 5);
+        Assert.assertTrue(data.equals(new short[][]{
                 {0, 1, 1, 1, 2},
                 {3, 4, 4, 4, 5},
                 {3, 4, 4, 4, 5},
                 {3, 4, 4, 4, 5},
                 {6, 7, 7, 7, 8}
-        };
-        Assert.assertTrue(MatrixUtils.equals(
-                assertData,
-                data
-        ));
+        }));
     }
 }

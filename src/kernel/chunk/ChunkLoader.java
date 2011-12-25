@@ -1,5 +1,7 @@
 package kernel.chunk;
 
+import kernel.util.Matrix;
+
 import java.io.RandomAccessFile;
 
 /**
@@ -10,5 +12,5 @@ import java.io.RandomAccessFile;
  */
 public interface ChunkLoader
 {
-    short[][] load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException;
+    Matrix load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException;
 }

@@ -1,7 +1,5 @@
 package kernel.chunk;
 
-import java.io.IOException;
-
 /**
  * Created by IntelliJ IDEA.
  * User: alex

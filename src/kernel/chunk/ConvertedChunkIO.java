@@ -1,6 +1,11 @@
 package kernel.chunk;
 
-import java.io.*;
+import kernel.util.Matrix;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,42 +15,15 @@ import java.io.*;
  */
 public class ConvertedChunkIO implements ChunkLoader, ChunkSaver
 {
-    public short[][] load(InputStream stream) throws ChunkNotLoadedException
-    {
-        DataInputStream dis = new DataInputStream(stream);
-        try
-        {
-            int edge = dis.readInt();
-            short data[][] = new short[edge][edge];
-
-            for (int x = 0; x < edge; x++)
-                for (int y = 0; y < edge; y++)
-                    data[y][x] = dis.readShort();
-
-            dis.close();
-            return data;
-        }
-        catch (IOException ex)
-        {
-            throw new ChunkNotLoadedException(ex);
-        }
-        finally
-        {
-            try{ dis.close(); }
-            catch (IOException e){}
-        }
-    }
-
-    public void save(short[][] data, OutputStream stream) throws ChunkNotSavedException
+    public void save(Matrix data, OutputStream stream) throws ChunkNotSavedException
     {
         DataOutputStream dos = new DataOutputStream(stream);
         try
         {
-            int length = data.length;
-            dos.writeInt(length);
-            for(int x=0; x< length; x++)
-                for(int y=0; y< length; y++)
-                    dos.writeShort(data[x][y]);
+            dos.writeInt(data.getWidth());
+            for(int y=0; y<data.getHeight(); y++)
+                for(int x=0; x<data.getWidth(); x++)
+                    dos.writeShort(data.get(x, y));
 
             dos.close();
         }
@@ -55,8 +33,8 @@ public class ConvertedChunkIO implements ChunkLoader, ChunkSaver
         }
     }
 
-    public short[][] load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException
+    public Matrix load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException
     {
-        return new short[0][];
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }

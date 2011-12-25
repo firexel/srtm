@@ -1,11 +1,8 @@
 package kernel.chunk;
 
-import com.sun.xml.internal.txw2.output.IndentingXMLFilter;
-import kernel.util.MatrixUtils;
+import kernel.util.Matrix;
 
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 
 /**
@@ -23,7 +20,7 @@ public class DefaultSrtmLoader implements ChunkLoader
         this.edge = edge;
     }
 
-    public short[][] load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException
+    public Matrix load(RandomAccessFile file, int x, int y, int width, int height) throws ChunkNotLoadedException
     {
         if (x + width - 1 > edge)
             throw new ChunkNotLoadedException("Width too large :" + (x + width - 1));
@@ -47,7 +44,7 @@ public class DefaultSrtmLoader implements ChunkLoader
                     result[iy - y][ix] = (short) sh;
                 }
             }
-            return result;
+            return new Matrix(width, height, result);
         }
         catch (IOException e)
         {

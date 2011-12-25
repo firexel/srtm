@@ -1,12 +1,4 @@
-import kernel.*;
-import ui.FolderChooser;
 import ui.MainWindow;
-import ui.OptionsView;
-import ui.LodCanvas;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.

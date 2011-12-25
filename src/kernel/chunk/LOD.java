@@ -66,10 +66,7 @@ public class LOD
         int edge = 1201;
 
         ChunkLoader loader = new DefaultSrtmLoader(edge);
-
-        Chunk chunks[][] = new Chunk[width][height];
-        for (int x = 0; x < width; x++)
-            chunks[x] = new Chunk[height];
+        Chunk chunks[][] = new Chunk[height][width];
 
         File folder = new File(path);
         for (String filename : folder.list(HGT_FILTER))
@@ -84,7 +81,7 @@ public class LOD
             if (filename.charAt(3) == 'W')
                 azimuthAngle *= -1;
 
-            chunks[azimuthAngle + width / 2][zenithAngle + height / 2] = chunk;
+            chunks[zenithAngle + height / 2][azimuthAngle + width / 2] = chunk;
         }
 
         return new LOD(width, height, edge, chunks);

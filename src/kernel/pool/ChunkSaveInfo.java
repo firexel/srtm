@@ -1,6 +1,6 @@
 package kernel.pool;
 
-import kernel.chunk.Chunk;
+import kernel.util.Matrix;
 
 /**
 * Created by IntelliJ IDEA.
@@ -10,11 +10,11 @@ import kernel.chunk.Chunk;
 */
 public class ChunkSaveInfo
 {
-    public short[][] data;
+    public Matrix data;
     public int chunkNumber;
     public int chunkEdge;
     
-    public ChunkSaveInfo(int chunkNumber, int chunkEdge, short[][] data)
+    public ChunkSaveInfo(int chunkNumber, int chunkEdge, Matrix data)
     {
         this.chunkNumber = chunkNumber;
         this.data = data;

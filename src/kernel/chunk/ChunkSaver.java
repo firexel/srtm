@@ -1,5 +1,7 @@
 package kernel.chunk;
 
+import kernel.util.Matrix;
+
 import java.io.OutputStream;
 
 /**
@@ -10,5 +12,5 @@ import java.io.OutputStream;
  */
 public interface ChunkSaver
 {
-    void save(short data[][], OutputStream stream) throws ChunkNotSavedException;
+    void save(Matrix data, OutputStream stream) throws ChunkNotSavedException;
 }

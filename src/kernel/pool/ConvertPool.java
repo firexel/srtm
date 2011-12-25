@@ -1,8 +1,8 @@
 package kernel.pool;
 
 import kernel.chunk.LOD;
-import kernel.chunk.Chunk;
 import kernel.source.DataSource;
+import kernel.util.Matrix;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,6 +24,7 @@ public class ConvertPool
     private int height;
     private LOD lod;
     private Pool<ChunkSaveInfo> savePool;
+    private ProgressInfo info;
 
     public ConvertPool(DataSource source, Pool<ChunkSaveInfo> savePool, int edge)
     {
@@ -36,15 +37,16 @@ public class ConvertPool
 
         maxChunkIndex = width * height - 1;
         lod = LOD.createEmpty(width, height, edge);
+        info = new ProgressInfo(maxChunkIndex + 1);
     }
 
-    public LOD start(int threads)
+    public ProgressInfo start(int threads)
     {
         executorService = Executors.newCachedThreadPool();
         for (int i = 0; i < threads; i++)
             executorService.execute(new Converter());
 
-        return lod;
+        return info;
     }
 
     private synchronized int getNextChunkNumber()
@@ -68,24 +70,18 @@ public class ConvertPool
                 int offsetX = x * edge;
                 int offsetY = y * edge;
 
-                short data[][] = source.get(offsetX, offsetY, edge, edge);
-
-                boolean empty = true;
-
-                for (int i = 0; i < edge; i++)
-                    for (int j = 0; j < edge; j++)
-                        if (data[i][j] != 0)
-                            empty = false;
-
-                if (!empty)
+                Matrix matrix = source.get(offsetX, offsetY, edge, edge);
+                boolean empty = matrix.isEmpty();
+                synchronized (ConvertPool.this)
                 {
-                    synchronized (ConvertPool.this)
+                    info.incrementCovered();
+                    if (!empty)
                     {
-                        savePool.enqueue(new ChunkSaveInfo(chunk, edge, data));
+                        savePool.enqueue(new ChunkSaveInfo(chunk, edge, matrix));
+                        info.incrementSaved();
                     }
                 }
             }
-            
             System.out.printf("%s thread finished\n", Thread.currentThread().getName());
         }
     }

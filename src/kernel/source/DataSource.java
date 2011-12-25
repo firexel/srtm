@@ -1,5 +1,7 @@
 package kernel.source;
 
+import kernel.util.Matrix;
+
 /**
  * Created by IntelliJ IDEA.
  * User: alex
@@ -8,7 +10,7 @@ package kernel.source;
  */
 public interface DataSource
 {
-    short[][] get(int x, int y, int width, int height);
+    Matrix get(int x, int y, int width, int height);
     int getWidth();
     int getHeight();
 }

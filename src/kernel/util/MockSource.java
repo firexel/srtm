@@ -10,25 +10,25 @@ import kernel.source.DataSource;
  */
 public class MockSource implements DataSource
 {
-    private short data[][];
+    private Matrix data;
     private int width, height;
 
     public MockSource(short val, int edge)
     {
         width = height = edge;
-        data = MatrixUtils.fill(edge, edge, val);
+        data = new Matrix(edge, edge, val);
     }
 
     public MockSource(short[][] data)
     {
-        this.data = data;
-        width = data.length;
-        height = data[0].length;
+        height = data.length;
+        width = data[0].length;
+        this.data = new Matrix(width, height, data);
     }
 
-    public short[][] get(int bx, int by, int bw, int bh)
+    public Matrix get(int bx, int by, int bw, int bh)
     {
-        return MatrixUtils.region(data, bx, by, bw, bh);
+        return data.region(bx, by, bw, bh);
     }
 
     public int getWidth()

@@ -1,17 +1,14 @@
 package kernel.pool;
 
 import junit.framework.Assert;
-import kernel.chunk.Chunk;
-import kernel.chunk.ChunkLoader;
 import kernel.chunk.ChunkNotSavedException;
 import kernel.chunk.ChunkSaver;
+import kernel.util.Matrix;
 import org.junit.Test;
 
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,7 +25,7 @@ public class SavePoolTest
     {
         SavePool pool = new SavePool(new ChunkSaver()
         {
-            public void save(short[][] data, OutputStream stream) throws ChunkNotSavedException
+            public void save(Matrix data, OutputStream stream) throws ChunkNotSavedException
             {
                 latch.countDown();
             }
@@ -36,7 +33,7 @@ public class SavePoolTest
         
         for (int i = 0; i < 4; i++)
         {
-            ChunkSaveInfo info = new ChunkSaveInfo(i, 1, new short[1][1]);
+            ChunkSaveInfo info = new ChunkSaveInfo(i, 1, new Matrix(1, 1));
             pool.enqueue(info);
         }
 

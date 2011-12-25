@@ -1,12 +1,10 @@
 package kernel.chunk;
 
-import com.sun.istack.internal.NotNull;
 import kernel.source.DataSource;
+import kernel.util.Matrix;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,7 +37,7 @@ public class Chunk implements DataSource
         this.path = path;
     }
 
-    public void save(ChunkSaver saver, short[][] data)
+    public void save(ChunkSaver saver, Matrix data)
     {
         FileOutputStream fos;
         BufferedOutputStream bos;
@@ -64,12 +62,12 @@ public class Chunk implements DataSource
         }
     }
 
-    public synchronized short[][] get(int x, int y, int width, int height)
+    public synchronized Matrix get(int x, int y, int width, int height)
     {
         try
         {
             RandomAccessFile file = new RandomAccessFile(path + File.separator + filename, "r");
-            short[][] data = loader.load(file, x, y, width, height);
+            Matrix data = loader.load(file, x, y, width, height);
             file.close();
             return data;
         }

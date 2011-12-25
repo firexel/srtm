@@ -1,15 +1,12 @@
 package kernel.pool;
 
 import junit.framework.Assert;
-import kernel.chunk.Chunk;
 import kernel.source.DataSource;
-import kernel.util.MatrixUtils;
+import kernel.util.Matrix;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,9 +29,9 @@ public class ConvertPoolTest
         };
         DataSource source = new DataSource()
         {
-            public short[][] get(int x, int y, int width, int height)
+            public Matrix get(int x, int y, int width, int height)
             {
-                return MatrixUtils.fill(width, height, (short) 1);
+                return new Matrix(width, height, 1);
             }
 
             public int getWidth()

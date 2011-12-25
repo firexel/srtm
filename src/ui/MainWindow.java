@@ -1,17 +1,18 @@
 package ui;
 
-import kernel.chunk.*;
 import kernel.Options;
+import kernel.chunk.ChunkSaver;
+import kernel.chunk.ConvertedChunkIO;
+import kernel.chunk.LOD;
 import kernel.pool.ConvertPool;
+import kernel.pool.ProgressInfo;
 import kernel.pool.SavePool;
-import kernel.source.GridDataSource;
 import kernel.source.DataSource;
+import kernel.source.GridDataSource;
 import kernel.source.NearestInterpolator;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,19 +27,7 @@ public class MainWindow extends JFrame implements FolderChooser.FilePathListener
 
     // views
     private LodCanvas lodCanvas;
-    private OptionsView optionsView;    
-
-    // util
-    private Timer timer;
-    private ActionListener actionListener = new ActionListener()
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-            lodCanvas.repaint();
-            timer = new Timer(1000, actionListener);
-            timer.start();
-        }
-    };
+    private OptionsView optionsView;
 
     public MainWindow() throws HeadlessException
     {
@@ -53,16 +42,6 @@ public class MainWindow extends JFrame implements FolderChooser.FilePathListener
     public void onPathSelected(FolderChooser chooser, String path)
     {
         lod = LOD.parseSrtm2(path);
-        if (lodCanvas == null)
-        {
-            lodCanvas = new LodCanvas(lod);
-            add(lodCanvas, BorderLayout.CENTER);
-        }
-        else
-        {
-            lodCanvas.setLod(lod);
-            lodCanvas.repaint();
-        }
         if (optionsView == null)
         {
             optionsView = new OptionsView(new Options());
@@ -73,6 +52,8 @@ public class MainWindow extends JFrame implements FolderChooser.FilePathListener
         repaint();
     }
 
+
+
     public void onPerform(Options options)
     {
         System.out.printf("Start converting to %s int format %d*%d. Chunk size: %d\n",
@@ -80,22 +61,21 @@ public class MainWindow extends JFrame implements FolderChooser.FilePathListener
         );
         ChunkSaver saver = new ConvertedChunkIO();
         SavePool savePool = new SavePool(saver, options.output, 1);
-        GridDataSource gridDataSource = new GridDataSource(lod.getGrid());
+        GridDataSource gridDataSource = new GridDataSource(lod.getGrid(), lod.getChunkEdge());
         int width = options.width * options.chunkEdge;
         int height = options.height * options.chunkEdge;
         DataSource interpolator = new NearestInterpolator(gridDataSource, width, height);
         ConvertPool pool = new ConvertPool(interpolator, savePool, options.chunkEdge);
-        LOD lod = pool.start(2);
-        lodCanvas.setLod(lod);
-        lodCanvas.showLoading(false);
-        lodCanvas.repaint();
-        pack();
-        startUpdating();
+        ProgressInfo progressInfo = pool.start(2);
+        createProgressViews(progressInfo);
     }
 
-    private void startUpdating()
+    private void createProgressViews(ProgressInfo info)
     {
-        timer = new Timer(1000, actionListener);
-        timer.start();
+        remove(optionsView);
+        ProgressView progressView = new ProgressView(info);
+        add(progressView);
+        progressView.startUpdating();
+        pack();
     }
 }
