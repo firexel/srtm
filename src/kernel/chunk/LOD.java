@@ -49,11 +49,6 @@ public class LOD
         return chunks[x][y];
     }
 
-    public void setChunk(int x, int y, @Nullable Chunk chunk)
-    {
-        chunks[x][y] = chunk;
-    }
-
     public int getChunkEdge()
     {
         return chunkEdge;
